@@ -7,8 +7,11 @@ An inventory based task runner. Inspired by [Knife](https://docs.chef.io/knife.h
 
 ```bash
 # marvin usage
-$> marvin <inventory:filter> <taskname> <any additional args you might want to use>
+$> marvin <inventory:filter> <taskname> <any additional args you might want to use>```
 
+Here is an example how you can use marvin to run queries across multiple databases.
+
+```bash
 # run a query on all databases in the inventory
 $> marvin db:* query select count(*) from tablename
 
