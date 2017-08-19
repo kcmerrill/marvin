@@ -1,0 +1,7 @@
+tasks:
+  query: |
+    mysql -u :user -p :password -h :db -e ":args"
+inventory: 
+  db:master.db.kcmerrill.com user:db_user password:$PASSWORD 
+  db:replica.db.kcmerrill.com user:db_user password:$PASSWORD
+  db:manual-query.db.kcmerrill.com user:db_user password:$PASSWORD
