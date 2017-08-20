@@ -1,0 +1,6 @@
+package: github.com/kcmerrill/marvin
+import:
+- package: golang.org/x/crypto
+  subpackages:
+  - ssh/terminal
+- package: gopkg.in/yaml.v2
