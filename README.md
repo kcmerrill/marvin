@@ -7,7 +7,8 @@ An inventory based task runner. Inspired by [Knife](https://docs.chef.io/knife.h
 
 ```bash
 # marvin usage
-$> marvin <inventory:filter> <taskname> <any additional args you might want to use>```
+$> marvin <inventory:filter> <taskname> <any additional args you might want to use>
+```
 
 Here is an example how you can use marvin to run queries across multiple databases.
 
@@ -16,26 +17,17 @@ Here is an example how you can use marvin to run queries across multiple databas
 $> marvin db:* query select count(*) from tablename
 
 # run a query on just the master database
-$> marvin db:master query select count(*) from tablename
+$> marvin "db:master" query select count(*) from tablename
 ```
-
-The previous commands are possible given the following `marvin.yml` configuration file.
+The previous commands are made possible given the following `marvin.yml` configuration file.
 
 ```yaml
 tasks:
   query: |
-    mysql -u :user -p :password -h :db -e ":args"
-inventory: 
-  db:master host:master.db.kcmerrill.com user:db_user password:$PASSWORD 
-  db:replica host:replica.db.kcmerrill.com user:db_user password:$PASSWORD
-  db:manual-query host:manual-query.db.kcmerrill.com user:db_user password:$PASSWORD
+    mysql -u :user -p :password -h :host -e ":{}"
+inventory:
+    static: |
+      db:master host:master.db.kcmerrill.com user:db_user password:$PASSWORD 
+      db:replica host:replica.db.kcmerrill.com user:db_user password:$PASSWORD
+      db:manual-query host:manual-query.db.kcmerrill.com user:db_user password:$PASSWORD
 ```
-
-
-## Inventory
-
-Inventory can come from 3 ways `Dynamic`, `Static` and `stdin`. 
-
-### `Static` Inventory
-
-Simple strings that are `key:value` pairs on a single line. An example of mysql 

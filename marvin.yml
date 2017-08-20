@@ -1,7 +1,8 @@
 tasks:
   query: |
-    mysql -u :user -p :password -h :db -e ":args"
-inventory: 
-  db:master host:master.db.kcmerrill.com user:db_user password:$PASSWORD 
-  db:replica host:replica.db.kcmerrill.com user:db_user password:$PASSWORD
-  db:manual-query host:manual-query.db.kcmerrill.com user:db_user password:$PASSWORD
+    echo mysql -u :user -p :password -h :db -e ":args"
+inventory:
+  static: |
+    db:master host:master.db.kcmerrill.com user:db_user password:$PASSWORD
+    db:replica host:replica.db.kcmerrill.com user:db_user password:$PASSWORD
+    db:manual-query host:manual-query.db.kcmerrill.com user:db_user password:$PASSWORD
