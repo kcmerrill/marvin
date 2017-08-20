@@ -28,7 +28,7 @@ func marvinFile(dir, configFile string) string {
 		curDir, curDirError := os.Getwd()
 		if curDirError != nil {
 			// huh, never seen this before
-			speak("Unable to get directory informtion", true)
+			speak("Unable to get directory information", true)
 		}
 
 		// finished yet?
