@@ -19,12 +19,13 @@ $> marvin db:* query select count(*) from tablename
 # run a query on just the master database
 $> marvin db:master query select count(*) from tablename
 ```
+
 The previous commands are made possible given the following `marvin.yml` configuration file.
 
 ```yaml
 tasks:
   query: |
-    mysql -u :user -p :password -h :host -e ":{}"
+    mysql -u :user -p :password -h :host -e ":args"
 inventory:
     static: |
       db:master host:master.db.kcmerrill.com user:db_user password:$PASSWORD

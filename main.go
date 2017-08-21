@@ -7,7 +7,11 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		speak("Invalid inventory or task", true)
+		speak("error> missing inventory", true)
+	}
+
+	if len(os.Args) == 2 {
+		speak("error> missing task, or at the very least, shell arguments", true)
 	}
 
 	args := ""

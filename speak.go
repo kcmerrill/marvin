@@ -1,13 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"os"
+
+	"github.com/fatih/color"
 )
 
 func speak(msg string, exit bool) {
-	fmt.Println(msg)
 	if exit {
+		color.Red(msg)
 		os.Exit(42)
+	} else {
+		color.Green(msg)
 	}
 }

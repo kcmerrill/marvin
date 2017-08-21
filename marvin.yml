@@ -1,8 +1,11 @@
 tasks:
+  ssh: |
+    ssh {{ .user }}@{{ .host }} {{ .args }}
   query: |
-    echo mysql -u :user -p :password -h :db -e ":args"
+    mysql --login-path=local -h {{ .host }} -e "{{ .args }} "
 inventory:
   static: |
-    db:master host:master.db.kcmerrill.com user:db_user password:$PASSWORD
-    db:replica host:replica.db.kcmerrill.com user:db_user password:$PASSWORD
-    db:manual-query host:manual-query.db.kcmerrill.com user:db_user password:$PASSWORD
+      db:local3306 host:0.0.0.0 user:root password:$DB_PW p:3306 path:local
+      db:local3307 host:0.0.0.0 user:root password:$DB_PW p:3307 path:local
+      db:local3308 host:0.0.0.0 user:root password:$DB_PW p:3308 path:local
+      host:kcmerrill.com user:root

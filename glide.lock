@@ -1,6 +1,8 @@
-hash: 6d3cd85fe2793a00610e8a4f51dfc1c4d1af24adb38f5c5c272f342fd05c5cec
-updated: 2017-08-19T23:02:04.935210527-06:00
+hash: bdc88d31372bdfd46ae760d3746c73941e4369c49dcf6c586a621819bda62aa0
+updated: 2017-08-20T17:42:19.752494136-06:00
 imports:
+- name: github.com/fatih/color
+  version: 570b54cabe6b8eb0bc2dfce68d964677d63b5260
 - name: golang.org/x/crypto
   version: 453249f01cfeb54c3d549ddb75ff152ca243f9d8
   subpackages:
