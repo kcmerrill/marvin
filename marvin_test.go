@@ -22,7 +22,7 @@ inventory:
 `
 }
 func TestNewMarvinStruct(t *testing.T) {
-	m := newMarvin(getSampleConfig(), "query", "task", "")
+	m := newMarvin(getSampleConfig(), "db:", "task", "")
 	if taskCommand, taskExists := m.Tasks["mysql"]; !taskExists && taskCommand != "mysql_command" {
 		log.Fatalf("Expected mysql_command, Actual: " + taskCommand)
 	}
@@ -33,7 +33,7 @@ func TestNewMarvinStruct(t *testing.T) {
 }
 
 func TestRawToInventory(t *testing.T) {
-	m := newMarvin(getSampleConfig(), "query", "task", "")
+	m := newMarvin(getSampleConfig(), "db:", "task", "")
 	if len(m.Inventory.static) != 3 {
 		log.Fatalf("Expected 3 static inventories")
 	}
