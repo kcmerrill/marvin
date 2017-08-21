@@ -25,7 +25,7 @@ The previous commands are made possible given the following `marvin.yml` configu
 ```yaml
 tasks:
   query: |
-    mysql -u :user -p :password -h :host -e ":args"
+    mysql -u {{ .user }} -p {{ .password }} -h {{ .host }} -e "{{ .args }} "
 inventory:
     dynamic: 
       files: ls -1
