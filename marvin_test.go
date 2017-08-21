@@ -47,8 +47,8 @@ func TestRawToInventory(t *testing.T) {
 	}
 
 	fmt.Println(m.Inventory.static[2])
-	if m.Inventory.static[2]["_id"] != "nothingheretosee" {
-		log.Fatalf("Without a ':', _id should be the key")
+	if m.Inventory.static[2]["id"] != "nothingheretosee" {
+		log.Fatalf("Without a ':', id should be the key")
 	}
 }
 
