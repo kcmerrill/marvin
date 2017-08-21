@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/fatih/color"
 
@@ -35,8 +36,14 @@ func newMarvin(config, query, task, args string) marvin {
 	}
 	// set a few defaults
 	m.Config["del"] = " "
+
 	// set a shell default task
 	m.Tasks["shell"] = "ssh {{ .host }} {{ .args }}"
+	m.Tasks["ls"] = "echo {{ .raw }}"
+
+	// set some default inventory
+	m.Inventory.Dynamic = make(map[string]string)
+	m.Inventory.Dynamic["files"] = "ls -R -1"
 
 	err := yaml.Unmarshal([]byte(config), &m)
 	if err != nil {
@@ -49,8 +56,11 @@ func newMarvin(config, query, task, args string) marvin {
 		m.Inventory.StaticRaw += "\n" + string(stdin)
 	}
 
-	m.rawToInventory(m.Inventory.StaticRaw)
 	m.filter(query)
+
+	if len(m.filtered) == 0 {
+		speak("inventory> none matched your criteria", true)
+	}
 	m.task(task, args)
 	return m
 }
@@ -75,6 +85,9 @@ func (m *marvin) rawToInventory(raw string) []map[string]string {
 						i["id"] = i[kv[0]]
 					}
 				}
+
+				// regardless, lets add a raw
+				i["raw"] = row
 			}
 
 			// add the inventory
@@ -93,9 +106,44 @@ func (m *marvin) filter(queryString string) []map[string]string {
 	q := strings.Split(queryString, ":")
 	if len(q) == 2 {
 		sKey, sValue = q[0], q[1]
+		if sKey == "" {
+			sKey = "id"
+		}
+		if sValue == "" {
+			sValue = "*"
+		}
 	} else {
 		sKey, sValue = "id", q[0]
 	}
+
+	if dynamicCmd, dynamicCmdExists := m.Inventory.Dynamic[sKey]; dynamicCmdExists {
+		dInventoryOutput, dInventoryError := m.exec(dynamicCmd)
+		if dInventoryError == nil {
+			// if no errors, add it
+			m.Inventory.StaticRaw += "\n"
+			for _, row := range strings.Split(dInventoryOutput, "\n") {
+				// add each record, with the inventory name
+				m.Inventory.StaticRaw += sKey + ":" + row + "\n"
+			}
+		}
+	}
+
+	if sKey == "id" || sKey == "raw" {
+		// sigh, we need to generate ALL inventory because we just don't know
+		for dInventoryName, dInventoryCmd := range m.Inventory.Dynamic {
+			m.Inventory.StaticRaw += "\n"
+			if dInventoryOutput, dInventoryError := m.exec(dInventoryCmd); dInventoryError == nil {
+				// no errors, sweet
+				for _, row := range strings.Split(dInventoryOutput, "\n") {
+					// add each record, with the inventory name
+					m.Inventory.StaticRaw += dInventoryName + ":" + row + "\n"
+				}
+			}
+		}
+	}
+
+	// inventory should now be set ...
+	m.rawToInventory(m.Inventory.StaticRaw)
 
 	// replace
 	sKey = strings.Replace(sKey, "*", ".*", -1)
@@ -129,10 +177,8 @@ func (m *marvin) task(taskName, args string) {
 	for cmdID, command := range rawCommands {
 		wg.Add(1)
 		go func(cmdID, command string) {
-			cmd := exec.Command("sh", "-c", command)
-			execOutput, execError := cmd.CombinedOutput()
-			output := strings.TrimSpace(string(execOutput))
-			output = strings.Trim(output, "\r\n")
+
+			output, execError := m.exec(command)
 
 			// hopefully only one line :fingers_crossed
 			if len(strings.Split(output, "\n")) > 1 {
@@ -156,6 +202,7 @@ func (m *marvin) inventoryCheck(task string, filtered []map[string]string, args 
 	for _, inventory := range filtered {
 		// add defaults to filtered inventory
 		inventory["args"] = args
+		inventory["time"] = time.Now().String()
 		cmd, cmdParseError := m.template(task, inventory)
 		if cmdParseError != nil {
 			speak(inventory["id"]+"> missing/invalid arguments", true)
@@ -173,4 +220,12 @@ func (m *marvin) template(task string, inventory map[string]string) (string, err
 		return b.String(), nil
 	}
 	return "", fmt.Errorf("id: " + inventory["id"])
+}
+
+func (m *marvin) exec(command string) (string, error) {
+	cmd := exec.Command("sh", "-c", command)
+	execOutput, execError := cmd.CombinedOutput()
+	output := strings.TrimSpace(string(execOutput))
+	output = strings.Trim(output, "\r\n")
+	return output, execError
 }

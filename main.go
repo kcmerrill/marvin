@@ -11,7 +11,8 @@ func main() {
 	}
 
 	if len(os.Args) == 2 {
-		speak("error> missing task, or at the very least, shell arguments", true)
+		//speak("error> missing task, or at the very least, shell arguments", true)
+		os.Args = append(os.Args, "ls")
 	}
 
 	args := ""
