@@ -37,13 +37,18 @@ func newMarvin(config, query, task, args string) marvin {
 	// set a few defaults
 	m.Config["del"] = " "
 
-	// set a shell default task
-	m.Tasks["shell"] = "ssh {{ .host }} {{ .args }}"
+	// set default tasks
+	m.Tasks["ssh"] = "ssh {{ .host }} {{ .args }}"
 	m.Tasks["ls"] = "echo {{ .raw }}"
+	m.Tasks["open"] = "open {{ .id }} && echo opening ..."
 
 	// set some default inventory
 	m.Inventory.Dynamic = make(map[string]string)
-	m.Inventory.Dynamic["files"] = "ls -R -1"
+	m.Inventory.Dynamic["file"] = "ls -R -1"
+	m.Inventory.Dynamic["dir"] = "ls -d */ | cut -f1 -d'/'"
+	m.Inventory.Dynamic["branch"] = "git branch | cut -c 3-"
+	m.Inventory.Dynamic["docker"] = "docker ps --format \"{{ .Names }}\""
+	m.Inventory.Dynamic["bookmark"] = `cat ~/Library/Application\ Support/Google/Chrome/Default/Bookmarks | grep -i http | sed "s/ //g" | sed "s/\"//g" | sed "s/url://g"`
 
 	err := yaml.Unmarshal([]byte(config), &m)
 	if err != nil {
@@ -75,7 +80,7 @@ func (m *marvin) rawToInventory(raw string) []map[string]string {
 				continue
 			}
 			for id, kvs := range strings.Split(row, m.Config["del"]) {
-				kv := strings.Split(kvs, ":")
+				kv := strings.SplitN(kvs, ":", 2)
 				if len(kv) == 1 {
 					i["id"] = kv[0]
 				} else {

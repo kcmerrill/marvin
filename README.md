@@ -3,7 +3,7 @@
 
 # Marvin
 
-An inventory based task runner. Inspired by [Knife](https://docs.chef.io/knife.html) and [Ansible](https://www.ansible.com/). Marvin allows you to define the tasks you want to run, how you want to run them and where depending on how you define and setup your tasks.
+An inventory based task runner. Inspired by `xargs`, [Knife](https://docs.chef.io/knife.html) and [Ansible](https://www.ansible.com/). Marvin allows you to define the tasks you want to run, how you want to run them and where depending on how you define and setup your tasks. Create inventory statically by adding them to a centralized config file, or create them dynamically by either piping in inventory through `stdin` or through commands. 
 
 ```bash
 # marvin usage
@@ -18,6 +18,8 @@ $> marvin db:* query select count(*) from tablename
 
 # run a query on just the master database
 $> marvin db:master query select count(*) from tablename
+
+# run a command based on dynamic inventory(ls -R -1 ). 
 ```
 
 The previous commands are made possible given the following `marvin.yml` configuration file.
@@ -28,7 +30,7 @@ tasks:
     mysql -u {{ .user }} -p {{ .password }} -h {{ .host }} -e "{{ .args }} "
 inventory:
     dynamic: 
-      files: ls -1
+      files: ls -R -1
     static: |
       db:master host:master.db.kcmerrill.com user:db_user password:$PASSWORD
       db:replica host:replica.db.kcmerrill.com user:db_user password:$PASSWORD
@@ -41,7 +43,8 @@ By default, there are a few built in tasks. You can overide these if you'd like,
 
 1. `ls` will show all available inventory, both dynamic and static
 1. `ssh` will allow you to run a command with `{{ .args }}` on remote hosts
-1. Need more? Submit a PR ...
+1. `open` will simply open the file with `open` on macosx
+1. Need more? Just add them to `dynamic` section of `inventory` or feel free to pipe it into `stdin`
 
 ## Dyanmic Inventory
 
@@ -54,6 +57,14 @@ $> marvin *:* ls #display all available inventory
 
 $> marvin env:prod ssh whoami #ssh {{ .host }} {{ .args }}
 ```
+
+There are some dynamic inventory keys that will be processed when called upon included by default. 
+
+1. `file` = `ls -R -1` 
+1. `dir` = `ls -d */ | cut -f1 -d'/'`
+1. `branch` = `git branch | cut -c 3-`
+1. `docker` = `docker ps --format "{{ .Names }}"`
+1. `bookmarks` = `cat ~/Library/Application\ Support/Google/Chrome/Default/Bookmarks | grep -i http | sed "s/ //g" | sed "s/\"//g" | sed "s/url://g"`
 
 ## Binaries && Installation
 

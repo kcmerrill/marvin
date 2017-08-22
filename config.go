@@ -7,6 +7,7 @@ import (
 )
 
 func marvinFile(dir, configFile string) string {
+	currentDirectory, _ := os.Getwd()
 
 	// make sure directory exists
 	if _, dirExists := os.Stat(dir); dirExists != nil {
@@ -33,6 +34,7 @@ func marvinFile(dir, configFile string) string {
 
 		// finished yet?
 		if abs, _ := filepath.Abs(curDir); abs == "/" {
+			os.Chdir(currentDirectory)
 			break
 		}
 
