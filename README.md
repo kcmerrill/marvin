@@ -14,12 +14,11 @@ Here is an example how you can use marvin to run queries across multiple databas
 
 ```bash
 # run a query on all databases in the inventory
-$> marvin db:* query select count(*) from tablename
+$> marvin db:* query "select count(*) from tablename"
 
 # run a query on just the master database
-$> marvin db:master query select count(*) from tablename
+$> marvin db:master query "select count(*) from tablename"
 
-# run a command based on dynamic inventory(ls -R -1 ). 
 ```
 
 The previous commands are made possible given the following `marvin.yml` configuration file.
