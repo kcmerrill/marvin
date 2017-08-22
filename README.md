@@ -65,6 +65,17 @@ There are some dynamic inventory keys that will be processed when called upon in
 1. `docker` = `docker ps --format "{{ .Names }}"`
 1. `bookmarks` = `cat ~/Library/Application\ Support/Google/Chrome/Default/Bookmarks | grep -i http | sed "s/ //g" | sed "s/\"//g" | sed "s/url://g"`
 
+So what does that mean? That means you can run marvin inventory based tasks on said inventory.
+
+Here are a couple of examples:
+
+```bash
+$> marvin file:*.go git checkout -- {{ .file }} #reset all .go files in your branch
+$> marvin bookmark:console open # this would open via the cli a bookmark of your's in chrome that had console in in(such as AWS console)
+```
+
+Again, a bunch of different use cases ... use your imagination. 
+
 ## Binaries && Installation
 
 Feel free and use `go get` if you already have golang instaled. If not, feel free and download a compiled binary just for you and your OS: 
