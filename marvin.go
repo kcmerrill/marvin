@@ -27,28 +27,22 @@ type marvin struct {
 		Dynamic   map[string]string `yaml:"dynamic"`
 	} `yaml:"inventory"`
 	filtered []map[string]string
+	lock     *sync.Mutex
 }
 
-func newMarvin(config, query, task, args string) marvin {
-	m := marvin{
-		Config: make(map[string]string),
-		Tasks:  make(map[string]string),
+func newMarvin(config, query, task, args string) *marvin {
+	m := &marvin{
+		lock: &sync.Mutex{},
 	}
-	// set a few defaults
-	m.Config["del"] = " "
 
-	// set default tasks
-	m.Tasks["ssh"] = "ssh {{ .host }} {{ .args }}"
-	m.Tasks["ls"] = "echo {{ .raw }}"
-	m.Tasks["open"] = "open {{ .id }} && echo opening ..."
+	// set configuration defaults
+	m.setConfigDefaults()
 
-	// set some default inventory
-	m.Inventory.Dynamic = make(map[string]string)
-	m.Inventory.Dynamic["file"] = "ls -R -1"
-	m.Inventory.Dynamic["dir"] = "ls -d */ | cut -f1 -d'/'"
-	m.Inventory.Dynamic["branch"] = "git branch | cut -c 3-"
-	m.Inventory.Dynamic["docker"] = "docker ps --format \"{{ .Names }}\""
-	m.Inventory.Dynamic["bookmark"] = `cat ~/Library/Application\ Support/Google/Chrome/Default/Bookmarks | grep -i http | sed "s/ //g" | sed "s/\"//g" | sed "s/url://g"`
+	// set task defaults
+	m.setTaskDefaults()
+
+	// set some default dynamic inventory
+	m.setDynamicInventoryDefaults()
 
 	err := yaml.Unmarshal([]byte(config), &m)
 	if err != nil {
@@ -123,7 +117,7 @@ func (m *marvin) filter(queryString string) []map[string]string {
 
 	if dynamicCmd, dynamicCmdExists := m.Inventory.Dynamic[sKey]; dynamicCmdExists {
 		dInventoryOutput, dInventoryError := m.exec(dynamicCmd)
-		if dInventoryError == nil {
+		if dInventoryError == nil && strings.TrimSpace(dInventoryOutput) != "" {
 			// if no errors, add it
 			m.Inventory.StaticRaw += "\n"
 			for _, row := range strings.Split(dInventoryOutput, "\n") {
@@ -133,18 +127,27 @@ func (m *marvin) filter(queryString string) []map[string]string {
 		}
 	}
 
+	var wg sync.WaitGroup
 	if sKey == "id" || sKey == "raw" {
 		// sigh, we need to generate ALL inventory because we just don't know
 		for dInventoryName, dInventoryCmd := range m.Inventory.Dynamic {
-			m.Inventory.StaticRaw += "\n"
-			if dInventoryOutput, dInventoryError := m.exec(dInventoryCmd); dInventoryError == nil {
-				// no errors, sweet
-				for _, row := range strings.Split(dInventoryOutput, "\n") {
-					// add each record, with the inventory name
-					m.Inventory.StaticRaw += dInventoryName + ":" + row + "\n"
+			go func(dInventoryCmd, dInventoryName string) {
+				wg.Add(1)
+				m.Inventory.StaticRaw += "\n"
+				if dInventoryOutput, dInventoryError := m.exec(dInventoryCmd); dInventoryError == nil && strings.TrimSpace(dInventoryOutput) != "" {
+					// no errors, sweet
+					for _, row := range strings.Split(dInventoryOutput, "\n") {
+						if row == "" {
+							continue
+						}
+						// add each record, with the inventory name
+						m.Inventory.StaticRaw += dInventoryName + ":" + row + "\n"
+					}
 				}
-			}
+				wg.Done()
+			}(dInventoryCmd, dInventoryName)
 		}
+		wg.Wait()
 	}
 
 	// inventory should now be set ...
@@ -233,4 +236,31 @@ func (m *marvin) exec(command string) (string, error) {
 	output := strings.TrimSpace(string(execOutput))
 	output = strings.Trim(output, "\r\n")
 	return output, execError
+}
+
+func (m *marvin) setDynamicInventoryDefaults() {
+	m.Inventory.Dynamic = make(map[string]string)
+
+	m.Inventory.Dynamic["file"] = "ls -R -1"
+	m.Inventory.Dynamic["dir"] = "ls -d */ | cut -f1 -d'/'"
+	m.Inventory.Dynamic["branch"] = "git branch | cut -c 3-"
+	m.Inventory.Dynamic["docker"] = "docker ps --format \"{{ .Names }}\""
+	m.Inventory.Dynamic["bookmark"] = `cat ~/Library/Application\ Support/Google/Chrome/Default/Bookmarks | grep -i http | sed "s/ //g" | sed "s/\"//g" | sed "s/url://g"`
+	m.Inventory.Dynamic["ec2"] = `aws ec2 describe-instances --output=text | grep "TAGS$(printf '\t')Name" | grep -v " " | sed "s/TAGS$(printf '\t')Name$(printf '\t')//g"`
+}
+
+func (m *marvin) setTaskDefaults() {
+	m.Tasks = make(map[string]string)
+	// set default tasks
+	m.Tasks["ssh"] = "ssh {{ .host }} {{ .args }}"
+	m.Tasks["ls"] = "echo {{ .raw }}"
+	m.Tasks["open"] = "open {{ .id }} && echo opening"
+}
+
+func (m *marvin) setConfigDefaults() {
+	// set a few defaults
+	m.Config = make(map[string]string)
+
+	// delemiter
+	m.Config["del"] = " "
 }
