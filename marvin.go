@@ -143,8 +143,8 @@ func (m *marvin) filter(queryString string) []map[string]string {
 	if sKey == "id" || sKey == "raw" {
 		// sigh, we need to generate ALL inventory because we just don't know
 		for dInventoryName, dInventoryCmd := range m.Inventory.Dynamic {
+			wg.Add(1)
 			go func(dInventoryCmd, dInventoryName string) {
-				wg.Add(1)
 				m.lock.Lock()
 				m.Inventory.StaticRaw += "\n"
 				m.lock.Unlock()
