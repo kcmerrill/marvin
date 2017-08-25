@@ -6,12 +6,13 @@ import (
 )
 
 func main() {
+	currentDirectory, _ := os.Getwd()
+
 	if len(os.Args) < 2 {
 		speak("error> missing inventory", true)
 	}
 
 	if len(os.Args) == 2 {
-		//speak("error> missing task, or at the very least, shell arguments", true)
 		os.Args = append(os.Args, "ls")
 	}
 
@@ -20,5 +21,5 @@ func main() {
 		args = strings.Join(os.Args[3:], " ")
 	}
 
-	newMarvin(marvinFile(".", "marvin.yml"), os.Args[1], os.Args[2], args)
+	newMarvin(marvinFile(".", "marvin.yml"), currentDirectory, os.Args[1], os.Args[2], args)
 }

@@ -19,7 +19,10 @@ import (
 )
 
 type marvin struct {
-	Config    map[string]string `yaml:"config"`
+	Config struct {
+		Relative  bool   `yaml:"relative"`
+		Delemiter string `yaml:"delemiter"`
+	}
 	Tasks     map[string]string `yaml:"tasks"`
 	Inventory struct {
 		static    []map[string]string
@@ -30,7 +33,7 @@ type marvin struct {
 	lock     *sync.Mutex
 }
 
-func newMarvin(config, query, task, args string) *marvin {
+func newMarvin(config, currentDirectory, query, task, args string) *marvin {
 	m := &marvin{
 		lock: &sync.Mutex{},
 	}
@@ -49,6 +52,11 @@ func newMarvin(config, query, task, args string) *marvin {
 		speak(err.Error(), false)
 		speak("marvin.yml> invalid", true)
 	}
+
+	if m.Config.Relative {
+		os.Chdir(currentDirectory)
+	}
+
 	// stdin to static inventory
 	if !terminal.IsTerminal(0) {
 		stdin, _ := ioutil.ReadAll(os.Stdin)
@@ -73,12 +81,12 @@ func (m *marvin) rawToInventory(raw string) []map[string]string {
 			if row == "" {
 				continue
 			}
-			for id, kvs := range strings.Split(row, m.Config["del"]) {
+			for id, kvs := range strings.Split(row, m.Config.Delemiter) {
 				kv := strings.SplitN(kvs, ":", 2)
 				if len(kv) == 1 {
 					i["id"] = kv[0]
 				} else {
-					i[kv[0]] = strings.Join(kv[1:], m.Config["del"])
+					i[kv[0]] = strings.Join(kv[1:], m.Config.Delemiter)
 					// always set an id
 					if id == 0 {
 						i["id"] = i[kv[0]]
@@ -119,10 +127,14 @@ func (m *marvin) filter(queryString string) []map[string]string {
 		dInventoryOutput, dInventoryError := m.exec(dynamicCmd)
 		if dInventoryError == nil && strings.TrimSpace(dInventoryOutput) != "" {
 			// if no errors, add it
+			m.lock.Lock()
 			m.Inventory.StaticRaw += "\n"
+			m.lock.Unlock()
 			for _, row := range strings.Split(dInventoryOutput, "\n") {
 				// add each record, with the inventory name
+				m.lock.Lock()
 				m.Inventory.StaticRaw += sKey + ":" + row + "\n"
+				m.lock.Unlock()
 			}
 		}
 	}
@@ -133,7 +145,9 @@ func (m *marvin) filter(queryString string) []map[string]string {
 		for dInventoryName, dInventoryCmd := range m.Inventory.Dynamic {
 			go func(dInventoryCmd, dInventoryName string) {
 				wg.Add(1)
+				m.lock.Lock()
 				m.Inventory.StaticRaw += "\n"
+				m.lock.Unlock()
 				if dInventoryOutput, dInventoryError := m.exec(dInventoryCmd); dInventoryError == nil && strings.TrimSpace(dInventoryOutput) != "" {
 					// no errors, sweet
 					for _, row := range strings.Split(dInventoryOutput, "\n") {
@@ -141,7 +155,9 @@ func (m *marvin) filter(queryString string) []map[string]string {
 							continue
 						}
 						// add each record, with the inventory name
+						m.lock.Lock()
 						m.Inventory.StaticRaw += dInventoryName + ":" + row + "\n"
+						m.lock.Unlock()
 					}
 				}
 				wg.Done()
@@ -258,9 +274,9 @@ func (m *marvin) setTaskDefaults() {
 }
 
 func (m *marvin) setConfigDefaults() {
-	// set a few defaults
-	m.Config = make(map[string]string)
-
 	// delemiter
-	m.Config["del"] = " "
+	m.Config.Delemiter = " "
+
+	// relative?
+	m.Config.Relative = true
 }
