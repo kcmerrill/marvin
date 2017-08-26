@@ -276,7 +276,7 @@ func (m *marvin) setTaskDefaults() {
 
 func (m *marvin) setConfigDefaults() {
 	// delemiter
-	m.Config.Delemiter = "\t"
+	m.Config.Delemiter = " "
 
 	// relative?
 	m.Config.Relative = true
