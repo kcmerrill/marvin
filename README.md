@@ -5,6 +5,8 @@
 
 An inventory based task runner. Inspired by `xargs`, [Knife](https://docs.chef.io/knife.html) and [Ansible](https://www.ansible.com/). Marvin allows you to define the tasks you want to run, how you want to run them and where depending on how you define and setup your tasks. Create inventory statically by adding them to a centralized config file, or create them dynamically by either piping in inventory through `stdin` or through commands.
 
+[![Marvin Demo](assets/demo.png)] (https://youtu.be/OPn_1K271Zc)
+
 ```bash
 # marvin usage
 $> marvin <inventory:filter> <taskname> <any additional args you might want to use>
@@ -81,7 +83,3 @@ Again, a bunch of different use cases ... use your imagination.
 Feel free and use `go get` if you already have golang installed. If not, feel free and download a compiled binary just for you and your OS:
 
 [![MacOSX](https://raw.githubusercontent.com/kcmerrill/go-dist/master/assets/apple_logo.png "Mac OSX")](http://go-dist.kcmerrill.com/kcmerrill/marvin/mac/amd64) [![Linux](https://raw.githubusercontent.com/kcmerrill/go-dist/master/assets/linux_logo.png "Linux")](http://go-dist.kcmerrill.com/kcmerrill/marvin/linux/amd64)
-
-## Screencast
-
-[![Marvin Overview](http://i3.ytimg.com/vi/LLRBTKOlcS4/hqdefault.jpg)](https://www.youtube.com/watch?v=LLRBTKOlcS4)
