@@ -3,7 +3,7 @@
 
 # Marvin
 
-An inventory based task runner. Inspired by `xargs`, [Knife](https://docs.chef.io/knife.html) and [Ansible](https://www.ansible.com/). Marvin allows you to define the tasks you want to run, how you want to run them and where depending on how you define and setup your tasks. Create inventory statically by adding them to a centralized config file, or create them dynamically by either piping in inventory through `stdin` or through commands. 
+An inventory based task runner. Inspired by `xargs`, [Knife](https://docs.chef.io/knife.html) and [Ansible](https://www.ansible.com/). Marvin allows you to define the tasks you want to run, how you want to run them and where depending on how you define and setup your tasks. Create inventory statically by adding them to a centralized config file, or create them dynamically by either piping in inventory through `stdin` or through commands.
 
 ```bash
 # marvin usage
@@ -28,7 +28,7 @@ tasks:
   query: |
     mysql -u {{ .user }} -p {{ .password }} -h {{ .host }} -e "{{ .args }} "
 inventory:
-    dynamic: 
+    dynamic:
       files: ls -R -1
     static: |
       db:master host:master.db.kcmerrill.com user:db_user password:$PASSWORD
@@ -57,9 +57,9 @@ $> marvin *:* ls #display all available inventory
 $> marvin env:prod ssh whoami #ssh {{ .host }} {{ .args }}
 ```
 
-There are some dynamic inventory keys that will be processed when called upon included by default. 
+There are some dynamic inventory keys that will be processed when called upon included by default.
 
-1. `file` = `ls -R -1` 
+1. `file` = `ls -R -1`
 1. `dir` = `ls -d */ | cut -f1 -d'/'`
 1. `branch` = `git branch | cut -c 3-`
 1. `docker` = `docker ps --format "{{ .Names }}"`
@@ -74,10 +74,14 @@ $> marvin file:*.go git checkout -- {{ .file }} #reset all .go files in your bra
 $> marvin bookmark:console open # this would open via the cli a bookmark of your's in chrome that had console in in(such as AWS console)
 ```
 
-Again, a bunch of different use cases ... use your imagination. 
+Again, a bunch of different use cases ... use your imagination.
 
 ## Binaries && Installation
 
-Feel free and use `go get` if you already have golang instaled. If not, feel free and download a compiled binary just for you and your OS: 
+Feel free and use `go get` if you already have golang installed. If not, feel free and download a compiled binary just for you and your OS:
 
 [![MacOSX](https://raw.githubusercontent.com/kcmerrill/go-dist/master/assets/apple_logo.png "Mac OSX")](http://go-dist.kcmerrill.com/kcmerrill/marvin/mac/amd64) [![Linux](https://raw.githubusercontent.com/kcmerrill/go-dist/master/assets/linux_logo.png "Linux")](http://go-dist.kcmerrill.com/kcmerrill/marvin/linux/amd64)
+
+## Screencast
+
+[![Marvin Overview](http://i3.ytimg.com/vi/LLRBTKOlcS4/hqdefault.jpg)](https://www.youtube.com/watch?v=LLRBTKOlcS4)
