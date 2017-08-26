@@ -5,7 +5,7 @@
 
 An inventory based task runner. Inspired by `xargs`, [Knife](https://docs.chef.io/knife.html) and [Ansible](https://www.ansible.com/). Marvin allows you to define the tasks you want to run, how you want to run them and where depending on how you define and setup your tasks. Create inventory statically by adding them to a centralized config file, or create them dynamically by either piping in inventory through `stdin` or through commands.
 
-[![Marvin Demo](assets/demo.png)] (https://youtu.be/OPn_1K271Zc)
+[![Marvin Demo](assets/demo.png)](https://youtu.be/OPn_1K271Zc)
 
 ```bash
 # marvin usage
