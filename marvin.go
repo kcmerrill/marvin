@@ -81,6 +81,7 @@ func (m *marvin) rawToInventory(raw string) []map[string]string {
 			if row == "" {
 				continue
 			}
+
 			for id, kvs := range strings.Split(row, m.Config.Delemiter) {
 				kv := strings.SplitN(kvs, ":", 2)
 				if len(kv) == 1 {
@@ -206,7 +207,7 @@ func (m *marvin) task(taskName, args string) {
 
 			// hopefully only one line :fingers_crossed
 			if len(strings.Split(output, "\n")) > 1 {
-				output = "\n" + output
+				output = "\n" + output + "\n\n"
 			}
 
 			if execError != nil {
