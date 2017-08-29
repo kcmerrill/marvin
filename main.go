@@ -1,25 +1,30 @@
 package main
 
 import (
+	"flag"
 	"os"
 	"strings"
 )
 
 func main() {
+	flag.Parse()
+
+	args := flag.Args()
+
 	currentDirectory, _ := os.Getwd()
 
-	if len(os.Args) < 2 {
+	if len(args) < 2 {
 		speak("error> missing inventory", true)
 	}
 
-	if len(os.Args) == 2 {
+	if len(args) == 2 {
 		os.Args = append(os.Args, "ls")
 	}
 
-	args := ""
-	if len(os.Args) >= 3 {
-		args = strings.Join(os.Args[3:], " ")
+	passThrough := ""
+	if len(args) >= 3 {
+		passThrough = strings.Join(args[3:], " ")
 	}
 
-	newMarvin(marvinFile(".", "marvin.yml"), currentDirectory, os.Args[1], os.Args[2], args)
+	newMarvin(marvinFile(".", "marvin.yml"), currentDirectory, os.Args[1], os.Args[2], passThrough)
 }

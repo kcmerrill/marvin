@@ -272,7 +272,6 @@ func (m *marvin) setTaskDefaults() {
 	m.Tasks["ssh"] = "ssh {{ .host }} {{ .args }}"
 	m.Tasks["ls"] = "echo {{ .raw }}"
 	m.Tasks["open"] = "open {{ .id }} && echo opening"
-	m.Tasks["sh"] = "sh -c \"{{ .args }}\""
 }
 
 func (m *marvin) setConfigDefaults() {
