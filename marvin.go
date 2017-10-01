@@ -3,13 +3,13 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
 	"sync"
+	"text/template"
 	"time"
 
 	"github.com/fatih/color"

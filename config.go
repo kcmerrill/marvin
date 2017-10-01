@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func marvinFile(dir, configFile string) string {
@@ -40,6 +41,16 @@ func marvinFile(dir, configFile string) string {
 
 		// go up a dir
 		os.Chdir("..")
+	}
+
+	// lets see if a home directory exists, based on ENV
+	homeConfigFile := strings.TrimRight(os.Getenv("HOME"), "/") + "/marvin.yml"
+	if _, homeFileError := os.Stat(homeConfigFile); homeFileError == nil {
+		marvinFile, marvinFileError := ioutil.ReadFile(homeConfigFile)
+		if marvinFileError != nil {
+			speak("Cannot read "+homeConfigFile, true)
+		}
+		return string(marvinFile)
 	}
 
 	// nothing found
