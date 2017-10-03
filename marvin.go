@@ -12,7 +12,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/fatih/color"
+	"github.com/mgutz/ansi"
 
 	"golang.org/x/crypto/ssh/terminal"
 	yaml "gopkg.in/yaml.v2"
@@ -209,11 +209,10 @@ func (m *marvin) task(taskName, args string) {
 			if len(strings.Split(output, "\n")) > 1 {
 				output = "\n" + output + "\n\n"
 			}
-
 			if execError != nil {
-				color.Red(cmdID + "> " + output)
+				fmt.Print(ansi.ColorCode("red"), cmdID, " > "+output, "\n", ansi.ColorCode("reset"))
 			} else {
-				color.Green(cmdID + "> " + output)
+				fmt.Print(ansi.ColorCode("green"), cmdID, " > "+output, "\n", ansi.ColorCode("reset"))
 			}
 			wg.Done()
 		}(cmdID, command)
