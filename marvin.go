@@ -262,7 +262,7 @@ func (m *marvin) setDynamicInventoryDefaults() {
 	m.Inventory.Dynamic["branch"] = "git branch | cut -c 3-"
 	m.Inventory.Dynamic["docker"] = "docker ps --format \"{{ .Names }}\""
 	m.Inventory.Dynamic["bookmark"] = `cat ~/Library/Application\ Support/Google/Chrome/Default/Bookmarks | grep -i http | sed "s/ //g" | sed "s/\"//g" | sed "s/url://g"`
-	m.Inventory.Dynamic["ec2"] = `aws ec2 describe-instances --output=text | grep "TAGS$(printf '\t')Name" | grep -v " " | sed "s/TAGS$(printf '\t')Name$(printf '\t')//g"`
+	m.Inventory.Dynamic["ec2"] = "aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Name`].Value|[0]]' --filter Name='instance-state-name',Values='running' --output text"
 }
 
 func (m *marvin) setTaskDefaults() {
