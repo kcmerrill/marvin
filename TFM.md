@@ -4,7 +4,7 @@
 
 These are some samples plucked from my own personal `marvin.yml` file.
 
-### Github Vanity
+#### Github Vanity
 
 I typically will open up my traffic on various github projects. Instead of going to each project individual repo's traffic page, I can open them up pretty easily.
 
