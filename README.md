@@ -36,6 +36,8 @@ inventory:
       db:manual-query host:manual-query.db.kcmerrill.com user:db_user password:$PASSWORD
 ```
 
+More examples in the ['The Manual'](TFM.md)
+
 ## Built in tasks
 
 By default, there are a few built in tasks. You can overide these if you'd like, but by default you get `ls` and `ssh` as described below.
