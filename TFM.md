@@ -6,9 +6,9 @@ These are some samples plucked from my own personal `marvin.yml` file.
 
 #### Github Vanity
 
-I typically will open up my traffic on various github projects. Instead of going to each project individual repo's traffic page, I can open them up pretty easily.
+Previously, if I wanted to check my repository stats, I'd manually click on all my repos, then go to insights then traffic. Another example of how I am using marvin to check my repo stats painlessly. 
 
-Note in this example I'm using [kronk](https://github.com/kcmerrill/kronk), which is a simple regex tool I wrote that also happens to work awesome with marivn ;)
+Note in this example I'm using [kronk](https://github.com/kcmerrill/kronk), which is a simple regex tool I wrote that also happens to work awesome with marvin!
 
 ```
 # look at all repository traffic
