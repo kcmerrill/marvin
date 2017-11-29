@@ -63,14 +63,19 @@ func TestMarvinFilter(t *testing.T) {
 		log.Fatalf("Should only be 1 db_name2 matches")
 	}
 
-	m.filter("not*")
+	m.filter("id:not*")
 	if len(m.filtered) != 1 {
 		log.Fatalf("Should only be 1 not*")
 	}
 
-	m.filter("nothingheretosee")
+	m.filter("id:nothingheretosee")
 	if len(m.filtered) != 1 {
 		log.Fatalf("Should only be 1 *here")
+	}
+
+	m.filter("db")
+	if len(m.filtered) != 2 {
+		log.Fatalf("Should only be 2 *here")
 	}
 
 	m.filter("bingowashisnameo")
