@@ -121,7 +121,7 @@ func (m *marvin) filter(queryString string) []map[string]string {
 			sValue = "*"
 		}
 	} else {
-		sKey, sValue = "id", q[0]
+		sKey, sValue = q[0], "*"
 	}
 
 	if dynamicCmd, dynamicCmdExists := m.Inventory.Dynamic[sKey]; dynamicCmdExists {
