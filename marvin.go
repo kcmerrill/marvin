@@ -257,12 +257,13 @@ func (m *marvin) exec(command string) (string, error) {
 func (m *marvin) setDynamicInventoryDefaults() {
 	m.Inventory.Dynamic = make(map[string]string)
 
-	m.Inventory.Dynamic["file"] = "find . -type f"
-	m.Inventory.Dynamic["dir"] = "find . -type d"
+	m.Inventory.Dynamic["file"] = "find * -type f"
+	m.Inventory.Dynamic["dir"] = "find * -type d"
 	m.Inventory.Dynamic["branch"] = "git branch | cut -c 3-"
 	m.Inventory.Dynamic["docker"] = "docker ps --format \"{{ .Names }}\""
 	m.Inventory.Dynamic["bookmark"] = `cat ~/Library/Application\ Support/Google/Chrome/Default/Bookmarks | grep -i http | sed "s/ //g" | sed "s/\"//g" | sed "s/url://g"`
 	m.Inventory.Dynamic["ec2"] = "aws ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Name`].Value|[0]]' --filter Name='instance-state-name',Values='running' --output text"
+	m.Inventory.Dynamic["s3"] = "aws s3api list-buckets | grep BUCKETS | awk '{ print $3 }'"
 }
 
 func (m *marvin) setTaskDefaults() {
