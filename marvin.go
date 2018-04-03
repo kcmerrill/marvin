@@ -12,6 +12,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/Masterminds/sprig"
 	"github.com/mgutz/ansi"
 
 	"golang.org/x/crypto/ssh/terminal"
@@ -237,7 +238,7 @@ func (m *marvin) inventoryCheck(task string, filtered []map[string]string, args 
 }
 
 func (m *marvin) template(task string, inventory map[string]string) (string, error) {
-	template := template.Must(template.New("translate").Parse(task))
+	template := template.Must(template.New("translate").Funcs(sprig.TxtFuncMap()).Parse(task))
 	b := new(bytes.Buffer)
 	err := template.Execute(b, inventory)
 	if err == nil {

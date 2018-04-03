@@ -1,9 +1,12 @@
 package: github.com/kcmerrill/marvin
 import:
+- package: github.com/Masterminds/sprig
+  version: ^2.14.1
 - package: github.com/fatih/color
-  version: ^1.5.0
+  version: ^1.6.0
 - package: github.com/mgutz/ansi
 - package: golang.org/x/crypto
   subpackages:
   - ssh/terminal
 - package: gopkg.in/yaml.v2
+  version: ^2.2.1
